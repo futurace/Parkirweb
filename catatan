@@ -1,0 +1,1020 @@
+JOBSHEET KAYANYA
+# 1. SETTING IP ADDRESS VM
+
+Edit konfigurasi IP:
+
+```bash
+nano /etc/netplan/00-installer-config.yml
+```
+
+➡️ Mengatur IP statis Ubuntu.
+
+Terapkan konfigurasi:
+
+```bash
+netplan apply
+```
+
+➡️ Mengaktifkan konfigurasi IP yang baru.
+
+Cek IP:
+
+```bash
+ip a
+```
+
+➡️ Melihat IP Address yang aktif.
+
+Tes koneksi:
+
+```bash
+ping 192.168.1.20
+```
+
+➡️ Memastikan VM1 dan VM2 saling terhubung.
+
+---
+
+# 2. INSTALL GIT DAN CLONE REPOSITORY
+
+Install Git:
+
+```bash
+apt update
+apt install git -y
+```
+
+➡️ Menginstall Git.
+
+Clone repository:
+
+```bash
+git clone <url-github>
+```
+
+➡️ Mengambil source code Laravel dari GitHub.
+
+Masuk ke project:
+
+```bash
+cd adit-22-laravel
+```
+
+➡️ Masuk ke folder project.
+
+Cek isi folder:
+
+```bash
+ls
+```
+
+➡️ Memastikan file project sudah ada.
+
+---
+
+# 3. MEMBUAT FILE .ENV
+
+Masuk ke folder Laravel:
+
+```bash
+cd laravel-app
+```
+
+➡️ Masuk ke source Laravel.
+
+Copy env:
+
+```bash
+cp .env.example .env
+```
+
+➡️ Membuat file konfigurasi Laravel.
+
+Edit env:
+
+```bash
+nano .env
+```
+
+➡️ Mengubah konfigurasi database.
+
+Contoh:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=mysql-adit-22
+DB_PORT=3306
+DB_DATABASE=adit22_db
+DB_USERNAME=adit22_user
+DB_PASSWORD=adit@2026Secure
+```
+
+---
+
+# 4. INSTALL DOCKER
+
+Update package:
+
+```bash
+apt update
+```
+
+➡️ Memperbarui repository Ubuntu.
+
+Install Docker:
+
+```bash
+apt install docker.io docker-compose-v2 -y
+```
+
+➡️ Menginstall Docker Engine dan Docker Compose.
+
+Aktifkan Docker:
+
+```bash
+systemctl enable docker
+systemctl start docker
+```
+
+➡️ Menjalankan service Docker.
+
+Cek Docker:
+
+```bash
+docker -v
+```
+
+➡️ Memastikan Docker berhasil terinstall.
+
+---
+
+# 5. BUILD DAN MENJALANKAN CONTAINER
+
+Kembali ke root project:
+
+```bash
+cd /adit-22-laravel
+```
+
+Build image:
+
+```bash
+docker compose build
+```
+
+➡️ Membuat image berdasarkan Dockerfile.
+
+Menjalankan container:
+
+```bash
+docker compose up -d
+```
+
+➡️ Menjalankan seluruh service.
+
+Cek container:
+
+```bash
+docker ps
+```
+
+➡️ Memastikan container aktif.
+
+Harus muncul:
+
+```text
+app-adit-22-1
+app-adit-22-2
+app-adit-22-3
+mysql-adit-22
+```
+
+---
+
+# 6. CEK MYSQL
+
+Masuk ke MySQL:
+
+```bash
+docker exec -it mysql-adit-22 mysql -u root -p
+```
+
+➡️ Login ke MySQL Container.
+
+Lihat database:
+
+```sql
+SHOW DATABASES;
+```
+
+➡️ Memastikan database berhasil dibuat.
+
+Lihat user:
+
+```sql
+SELECT User, Host FROM mysql.user;
+```
+
+➡️ Memastikan user database ada.
+
+Keluar:
+
+```sql
+exit
+```
+
+---
+
+# 7. MASUK KE CONTAINER LARAVEL
+
+Masuk:
+
+```bash
+docker exec -it app-adit-22-1 bash
+```
+
+➡️ Masuk ke Laravel Container.
+
+Cek Laravel:
+
+```bash
+php artisan about
+```
+
+➡️ Memastikan Laravel berjalan.
+
+Test database:
+
+```bash
+php artisan tinker
+```
+
+```php
+DB::connection()->getPdo();
+```
+
+➡️ Memastikan Laravel terhubung ke MySQL.
+
+---
+
+# 8. MIGRASI DATABASE
+
+Jalankan migrasi:
+
+```bash
+php artisan migrate
+```
+
+➡️ Membuat tabel Laravel.
+
+Jika perlu ulang:
+
+```bash
+php artisan migrate:fresh
+```
+
+➡️ Menghapus dan membuat ulang tabel.
+
+Bersihkan cache:
+
+```bash
+php artisan config:clear
+```
+
+➡️ Menghapus cache konfigurasi.
+
+Keluar container:
+
+```bash
+exit
+```
+
+---
+
+# 9. TEST WEB LARAVEL
+
+Buka browser:
+
+```text
+http://192.168.1.20:8081
+```
+
+```text
+http://192.168.1.20:8082
+```
+
+```text
+http://192.168.1.20:8083
+```
+
+➡️ Memastikan ketiga replica Laravel berjalan.
+
+---
+
+# 10. INSTALL ANSIBLE (VM1)
+
+Install:
+
+```bash
+apt install ansible -y
+```
+
+➡️ Menginstall Ansible.
+
+Cek versi:
+
+```bash
+ansible --version
+```
+
+➡️ Memastikan Ansible terinstall.
+
+Install Collection Docker:
+
+```bash
+ansible-galaxy collection install community.docker
+```
+
+➡️ Agar Ansible dapat mengelola Docker.
+
+---
+
+# 11. SSH KEY-BASED AUTHENTICATION
+
+Generate key:
+
+```bash
+ssh-keygen
+```
+
+➡️ Membuat Private Key dan Public Key.
+
+Cek key:
+
+```bash
+ls ~/.ssh
+```
+
+➡️ Memastikan key berhasil dibuat.
+
+Copy key:
+
+```bash
+ssh-copy-id adit@192.168.1.20
+```
+
+➡️ Mengirim Public Key ke VM2.
+
+Test login:
+
+```bash
+ssh adit@192.168.1.20
+```
+
+➡️ Login tanpa password.
+
+Keluar:
+
+```bash
+exit
+```
+
+---
+
+# 12. MEMBUAT INVENTORY ANSIBLE
+
+Buat folder:
+
+```bash
+mkdir /ansible
+cd /ansible
+```
+
+➡️ Folder kerja Ansible.
+
+Buat inventory:
+
+```bash
+nano inventory.ini
+```
+
+Isi:
+
+```ini
+[managed]
+vm2 ansible_host=192.168.1.20 ansible_user=adit
+
+[managed:vars]
+ansible_python_interpreter=/usr/bin/python3
+```
+
+➡️ Daftar host yang akan dikelola.
+
+---
+
+# 13. TEST ANSIBLE
+
+Ping:
+
+```bash
+ansible -i inventory.ini managed -m ping
+```
+
+➡️ Mengecek koneksi Ansible.
+
+Harus muncul:
+
+```text
+pong
+```
+
+Cek user:
+
+```bash
+ansible -i inventory.ini managed -m command -a "whoami"
+```
+
+➡️ Menjalankan command di VM2.
+
+---
+
+# 14. INSTALL HAPROXY (VM1)
+
+Install:
+
+```bash
+apt install haproxy -y
+```
+
+➡️ Menginstall HAProxy.
+
+Cek versi:
+
+```bash
+haproxy -v
+```
+
+➡️ Memastikan HAProxy terinstall.
+
+---
+
+# 15. KONFIGURASI HAPROXY
+
+Edit:
+
+```bash
+nano /etc/haproxy/haproxy.cfg
+```
+
+Tambahkan:
+
+```cfg
+frontend laravel_frontend
+    bind *:80
+    mode http
+    default_backend laravel_backend
+
+backend laravel_backend
+    mode http
+    balance roundrobin
+
+    server app1 192.168.1.20:8081 check
+    server app2 192.168.1.20:8082 check
+    server app3 192.168.1.20:8083 check
+```
+
+➡️ Mengatur Load Balancing ke 3 container Laravel.
+
+---
+
+# 16. VALIDASI HAPROXY
+
+Cek syntax:
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+```
+
+➡️ Memastikan konfigurasi tidak error.
+
+Restart:
+
+```bash
+systemctl restart haproxy
+```
+
+➡️ Mengaktifkan konfigurasi baru.
+
+Status:
+
+```bash
+systemctl status haproxy
+```
+
+➡️ Memastikan service berjalan.
+
+---
+
+# 17. TEST LOAD BALANCER
+
+Cek port:
+
+```bash
+ss -tulpn | grep :80
+```
+
+➡️ Memastikan HAProxy mendengarkan port 80.
+
+Test backend:
+
+```bash
+curl -I http://192.168.1.20:8081
+curl -I http://192.168.1.20:8082
+curl -I http://192.168.1.20:8083
+```
+
+➡️ Memastikan semua replica hidup.
+
+Test HAProxy:
+
+```bash
+curl -I http://192.168.1.10
+```
+
+➡️ Memastikan request masuk ke HAProxy.
+
+Akses browser:
+
+```text
+http://192.168.1.10
+```
+
+➡️ Web Laravel tampil melalui Load Balancer.
+
+---
+
+# Ringkasan Hafalan Super Singkat
+
+```text
+1. Setting IP
+2. Clone Repository
+3. cp .env.example .env
+4. Edit Database .env
+5. Install Docker
+6. docker compose build
+7. docker compose up -d
+8. docker ps
+9. php artisan migrate
+10. Install Ansible
+11. ssh-keygen
+12. ssh-copy-id
+13. ansible ping
+14. Install HAProxy
+15. Konfigurasi HAProxy
+16. Restart HAProxy
+17. Test 192.168.1.10
+```
+
+COMMAND PENGUJIAN
+# 1. Cek IP Address
+
+```bash
+ip a
+```
+
+➡️ Melihat IP Address VM.
+
+```bash
+ip route
+```
+
+➡️ Melihat default gateway.
+
+```bash
+ping 192.168.1.20
+```
+
+➡️ Memastikan koneksi antar VM.
+
+---
+
+# 2. Cek Repository
+
+Masuk project:
+
+```bash
+pwd
+```
+
+➡️ Memastikan berada di folder project.
+
+Lihat isi:
+
+```bash
+ls
+```
+
+➡️ Memastikan file Laravel ada.
+
+Cek branch:
+
+```bash
+git branch
+```
+
+➡️ Mengetahui branch yang digunakan.
+
+Cek status:
+
+```bash
+git status
+```
+
+➡️ Memastikan repository bersih.
+
+---
+
+# 3. Cek File .env
+
+```bash
+cat .env
+```
+
+atau
+
+```bash
+nano .env
+```
+
+➡️ Memastikan konfigurasi database benar.
+
+---
+
+# 4. Cek Docker
+
+Versi Docker:
+
+```bash
+docker -v
+```
+
+Status Docker:
+
+```bash
+systemctl status docker
+```
+
+Semua container:
+
+```bash
+docker ps
+```
+
+Semua container termasuk yang mati:
+
+```bash
+docker ps -a
+```
+
+Image:
+
+```bash
+docker images
+```
+
+Log container:
+
+```bash
+docker logs app-adit-22-1
+```
+
+---
+
+# 5. Cek Docker Compose
+
+Service yang berjalan:
+
+```bash
+docker compose ps
+```
+
+Compose file:
+
+```bash
+cat docker-compose.yml
+```
+
+---
+
+# 6. Cek Container Laravel
+
+Masuk:
+
+```bash
+docker exec -it app-adit-22-1 bash
+```
+
+Cek Laravel:
+
+```bash
+php artisan about
+```
+
+Versi PHP:
+
+```bash
+php -v
+```
+
+Modul PHP:
+
+```bash
+php -m
+```
+
+---
+
+# 7. Cek Database
+
+Masuk MySQL:
+
+```bash
+docker exec -it mysql-adit-22 mysql -u root -p
+```
+
+Database:
+
+```sql
+SHOW DATABASES;
+```
+
+User:
+
+```sql
+SELECT User, Host FROM mysql.user;
+```
+
+Pilih database:
+
+```sql
+USE adit22_db;
+```
+
+Lihat tabel:
+
+```sql
+SHOW TABLES;
+```
+
+---
+
+# 8. Cek Migrasi Laravel
+
+```bash
+php artisan migrate:status
+```
+
+➡️ Melihat apakah migrasi sudah berhasil.
+
+---
+
+# 9. Cek Koneksi Database Laravel
+
+Masuk Tinker:
+
+```bash
+php artisan tinker
+```
+
+Lalu:
+
+```php
+DB::connection()->getPdo();
+```
+
+Kalau berhasil muncul objek PDO berarti koneksi sukses.
+
+---
+
+# 10. Cek SSH Key-Based
+
+Cek key:
+
+```bash
+ls ~/.ssh
+```
+
+Harus ada:
+
+```text
+id_ed25519
+id_ed25519.pub
+```
+
+atau
+
+```text
+id_rsa
+id_rsa.pub
+```
+
+Test login:
+
+```bash
+ssh adit@192.168.1.20
+```
+
+Kalau tidak meminta password berarti berhasil.
+
+---
+
+# 11. Cek Inventory Ansible
+
+```bash
+cat inventory.ini
+```
+
+Melihat isi inventory.
+
+---
+
+# 12. Cek Koneksi Ansible
+
+Ping:
+
+```bash
+ansible -i inventory.ini managed -m ping
+```
+
+Harus muncul:
+
+```text
+SUCCESS
+pong
+```
+
+Cek hostname:
+
+```bash
+ansible -i inventory.ini managed -m command -a "hostname"
+```
+
+Cek user:
+
+```bash
+ansible -i inventory.ini managed -m command -a "whoami"
+```
+
+---
+
+# 13. Cek HAProxy
+
+Status:
+
+```bash
+systemctl status haproxy
+```
+
+Versi:
+
+```bash
+haproxy -v
+```
+
+Validasi konfigurasi:
+
+```bash
+haproxy -c -f /etc/haproxy/haproxy.cfg
+```
+
+Melihat konfigurasi:
+
+```bash
+cat /etc/haproxy/haproxy.cfg
+```
+
+---
+
+# 14. Cek Port
+
+Port yang aktif:
+
+```bash
+ss -tulpn
+```
+
+Khusus port 80:
+
+```bash
+ss -tulpn | grep :80
+```
+
+Khusus Laravel:
+
+```bash
+ss -tulpn | grep 808
+```
+
+---
+
+# 15. Cek Backend Laravel
+
+Backend pertama:
+
+```bash
+curl http://192.168.1.20:8081
+```
+
+Backend kedua:
+
+```bash
+curl http://192.168.1.20:8082
+```
+
+Backend ketiga:
+
+```bash
+curl http://192.168.1.20:8083
+```
+
+Kalau hanya ingin melihat header:
+
+```bash
+curl -I http://192.168.1.20:8081
+```
+
+---
+
+# 16. Cek Load Balancer
+
+```bash
+curl http://192.168.1.10
+```
+
+atau
+
+```bash
+curl -I http://192.168.1.10
+```
+
+Buka browser:
+
+```text
+http://192.168.1.10
+```
+
+Harus muncul aplikasi Laravel.
+
+---
+
+# 17. Cek Log
+
+Docker:
+
+```bash
+docker logs app-adit-22-1
+```
+
+Laravel:
+
+```bash
+tail -f storage/logs/laravel.log
+```
+
+HAProxy:
+
+```bash
+journalctl -u haproxy -f
+```
+
+---
+
+# Cheat Sheet yang Sering Ditanya Penguji
+
+| Yang Dicek         | Command                                              |
+| ------------------ | ---------------------------------------------------- |
+| IP Address         | `ip a`                                               |
+| Ping VM            | `ping <ip>`                                          |
+| Docker aktif       | `systemctl status docker`                            |
+| Container jalan    | `docker ps`                                          |
+| Image Docker       | `docker images`                                      |
+| Log Container      | `docker logs <container>`                            |
+| Laravel jalan      | `php artisan about`                                  |
+| Status migrasi     | `php artisan migrate:status`                         |
+| Koneksi DB         | `php artisan tinker` → `DB::connection()->getPdo();` |
+| Database           | `SHOW DATABASES;`                                    |
+| Tabel              | `SHOW TABLES;`                                       |
+| SSH Key            | `ssh user@ip`                                        |
+| Ping Ansible       | `ansible -i inventory.ini managed -m ping`           |
+| Status HAProxy     | `systemctl status haproxy`                           |
+| Validasi HAProxy   | `haproxy -c -f /etc/haproxy/haproxy.cfg`             |
+| Port aktif         | `ss -tulpn`                                          |
+| Test Backend       | `curl http://ip:8081`                                |
+| Test Load Balancer | `curl http://ip-loadbalancer`                        |
+
+
+
+
+
+
+
