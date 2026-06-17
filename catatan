@@ -1013,6 +1013,185 @@ journalctl -u haproxy -f
 | Test Load Balancer | `curl http://ip-loadbalancer`                        |
 
 
+INSTALLASI DOCKER DAN ANSIBLE
+
+---
+
+# 1. Install Docker
+
+### Update repository
+
+```bash
+sudo apt update
+```
+
+➡️ Memperbarui daftar paket dari repository Ubuntu.
+
+### Upgrade package (opsional tetapi disarankan)
+
+```bash
+sudo apt upgrade -y
+```
+
+➡️ Memperbarui paket yang sudah terpasang.
+
+### Install Docker
+
+```bash
+sudo apt install docker.io -y
+```
+
+➡️ Menginstal Docker Engine.
+
+### Aktifkan Docker saat boot
+
+```bash
+sudo systemctl enable docker
+```
+
+➡️ Agar Docker otomatis berjalan saat sistem dinyalakan.
+
+### Jalankan Docker
+
+```bash
+sudo systemctl start docker
+```
+
+➡️ Menjalankan service Docker.
+
+### Cek status Docker
+
+```bash
+sudo systemctl status docker
+```
+
+➡️ Memastikan Docker aktif (`active (running)`).
+
+### Cek versi Docker
+
+```bash
+docker --version
+```
+
+atau
+
+```bash
+docker -v
+```
+
+➡️ Memastikan Docker berhasil terinstal.
+
+### (Opsional) Jalankan Docker tanpa sudo
+
+Tambahkan user ke grup Docker:
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+Lalu logout dan login kembali (atau restart terminal).
+
+---
+
+# 2. Install Docker Compose Plugin
+
+Pada Ubuntu versi terbaru:
+
+```bash
+sudo apt install docker-compose-v2 -y
+```
+
+➡️ Menginstal Docker Compose v2.
+
+Cek versi:
+
+```bash
+docker compose version
+```
+
+---
+
+# 3. Install Ansible
+
+### Update repository
+
+```bash
+sudo apt update
+```
+
+### Install Ansible
+
+```bash
+sudo apt install ansible -y
+```
+
+➡️ Menginstal Ansible.
+
+### Cek versi
+
+```bash
+ansible --version
+```
+
+➡️ Memastikan Ansible berhasil terinstal.
+
+---
+
+# 4. Install Collection Docker untuk Ansible
+
+Agar Ansible dapat mengelola container Docker:
+
+```bash
+ansible-galaxy collection install community.docker
+```
+
+➡️ Menginstal modul Docker untuk Ansible.
+
+### Cek collection yang terpasang
+
+```bash
+ansible-galaxy collection list
+```
+
+Harus muncul salah satunya:
+
+```text
+community.docker
+```
+
+---
+
+# Ringkasan Singkat
+
+## Docker
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo systemctl status docker
+docker --version
+```
+
+## Docker Compose
+
+```bash
+sudo apt install docker-compose-v2 -y
+docker compose version
+```
+
+## Ansible
+
+```bash
+sudo apt update
+sudo apt install ansible -y
+ansible --version
+ansible-galaxy collection install community.docker
+ansible-galaxy collection list
+```
+
 
 
 
